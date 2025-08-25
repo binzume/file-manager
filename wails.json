@@ -1,0 +1,10 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "file-manager",
+  "outputfilename": "file-manager",
+  "wailsjsdir": "./frontend",
+  "author": {
+    "name": "Kousuke Kawahira",
+    "email": "kawahira@binzume.net"
+  }
+}
