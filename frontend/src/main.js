@@ -1150,7 +1150,7 @@ class FileListLoader {
 		this.caps = [];
 	}
 	async getFiles(offset, limit, options, signal = null) {
-		let res = await window.go.main.App.GetFiles(this.path || "", offset, limit || -1);
+		let res = await window.go.main.App.GetFiles(this.path || ".", offset, limit || -1);
 		this.caps = res.folder.caps || [];
 		console.log(this.caps);
 		let canRemove = this.caps.includes('remove')

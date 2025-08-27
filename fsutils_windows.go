@@ -97,7 +97,7 @@ func (r *RootFs) Open(name string) (fs.File, error) {
 }
 
 func (r *RootFs) Stat(name string) (fs.FileInfo, error) {
-	if name == "" || name == "/" {
+	if name == "." || name == "/" {
 		return &driveEntry{drive: name}, nil
 	}
 	fsys, name := r.ResolveFS(name)
@@ -105,7 +105,7 @@ func (r *RootFs) Stat(name string) (fs.FileInfo, error) {
 }
 
 func (r *RootFs) ReadDir(name string) ([]fs.DirEntry, error) {
-	if name == "" || name == "/" {
+	if name == "." || name == "/" {
 		volumes, err := VolumeNames()
 		drives := []fs.DirEntry{}
 		for _, v := range volumes {
