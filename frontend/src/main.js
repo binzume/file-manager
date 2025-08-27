@@ -894,7 +894,7 @@ class FileListView {
 	_createItemEl(f, prefix) {
 		let iconEl = mkEl('img', [], { 'className': 'thumbnail' });
 		let isList = f.type == 'folder' || f.type == 'list';
-		if (f.thumbnail && f.thumbnail.fetch) {
+		if (f.thumbnail?.fetch) {
 			this.imageLoadQueue.add(iconEl, async el => {
 				let url = URL.createObjectURL(await (await f.thumbnail.fetch()).blob());
 				el.addEventListener('load', ev => URL.revokeObjectURL(url), { once: true });
@@ -1156,6 +1156,10 @@ class FileListLoader {
 		let canRemove = this.caps.includes('remove')
 		for (let item of res.items) {
 			item.path = item.path || ((this.path ? this.path + "/" : '') + item.name)
+			item.url = "volume?download=" + encodeURIComponent(item.path);
+			if (item.type.startsWith('image/')) {
+				item.thumbnailUrl = item.url + "&mode=thumbnail"
+			}
 			if (canRemove) {
 				item.remove = () => window.go.main.App.Remove(item.path);
 			}

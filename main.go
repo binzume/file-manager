@@ -2,7 +2,9 @@ package main
 
 import (
 	"embed"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -18,8 +20,29 @@ type FileLoader struct {
 }
 
 func (h *FileLoader) ServeHTTP(res http.ResponseWriter, req *http.Request) {
-	res.Header().Set("content-type", MimeTypeByName(req.URL.Path))
-	http.ServeFileFS(res, req, h.app.storage.v, req.URL.Path)
+	filePath := req.URL.Query().Get("download")
+	log.Println(filePath)
+	if filePath == "" {
+		return
+	}
+
+	if req.URL.Query().Get("mode") == "thumbnail" {
+		config := &ThumbnailConfig{CacheDir: ".file_manager_cache"}
+		select {
+		case cachePath := <-RequestThumbnail(h.app.storage.v, "image", filePath, "", config):
+			if cachePath != "" {
+				res.Header().Set("content-type", "image/jpeg")
+				http.ServeFile(res, req, cachePath)
+				return
+			}
+		case <-time.After(15 * time.Second):
+		}
+
+		return
+	}
+
+	res.Header().Set("content-type", MimeTypeByFilename(filePath))
+	http.ServeFileFS(res, req, h.app.storage.v, filePath)
 }
 
 func main() {
